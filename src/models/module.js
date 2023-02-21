@@ -9,8 +9,7 @@ const moduleSchema = new mongoose.Schema(
     },
     moduleOf: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Course',
-      required: true
+      ref: 'Course'
     },
     linkPdf: {
         type: String,

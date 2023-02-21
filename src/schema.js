@@ -35,6 +35,7 @@ module.exports = gql`
     me: User!
     courses: [Course!]!
     course(id: ID): Course!
+    modules: [Module!]!
   }
 
   type Mutation {
@@ -43,7 +44,6 @@ module.exports = gql`
     enrolCourse(id: ID!): Course!
     newModule(name: String!, linkPdf: String!, linkVideo:String!, courseId:String!): Module!
     deleteModule(id: String!): Boolean!
-    getModules(id: ID!): [Module!]!
     signUp(username: String!, email: String!, status: String!, password: String!): String!
     signIn(username: String, email: String, password: String!): String!
   }
