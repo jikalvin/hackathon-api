@@ -12,11 +12,9 @@ const models = require('./models');
 const typeDefs = require('./schema');
 const resolvers = require('./resolvers');
 
-const config = require('platformsh-config').config();
-
 // Run our server on a port specified in our .env file or port 4000
-const port = config.port || 4000;
-const DB_HOST = "mongodb+srv://first-jedi:Itwhizz0@cluster0.n7pwvdc.mongodb.net/?retryWrites=true&w=majority";
+const port = process.env.PORT || 4000;
+const DB_HOST = process.env.DB_HOST
 
 const app = express();
 
@@ -27,14 +25,12 @@ app.use(helmet());
 // CORS middleware
 app.use(cors());
 
-JWT_SECRET = "cosidhf9489@js9!"
-
 // get the user info from a JWT
 const getUser = token => {
   if (token) {
     try {
       // return the user information from the token
-      return jwt.verify(token, JWT_SECRET);
+      return jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
       // if there's a problem with the token, throw an error
       throw new Error('Session invalid');
