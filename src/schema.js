@@ -7,6 +7,8 @@ module.exports = gql`
     id: ID!
     username: String!
     email: String!
+    firstName: String!
+    lastName: String!
     avatar: String
     status: String!
     courses: [Course!]!
@@ -44,7 +46,7 @@ module.exports = gql`
     enrolCourse(id: ID!): Course!
     newModule(name: String!, linkPdf: String!, linkVideo:String!, courseId:String!): Module!
     deleteModule(id: String!): Boolean!
-    signUp(username: String!, email: String!, status: String!, password: String!): String!
+    signUp(username: String!, firstName: String!, lastName:String!,  email: String!, status: String!, password: String!): String!
     signIn(username: String, email: String, password: String!): String!
   }
 `;

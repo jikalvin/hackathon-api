@@ -102,7 +102,7 @@ module.exports = {
       linkVideo: args.linkVideo,
     });
   },
-  signUp: async (parent, { username, email, status, password }, { models }) => {
+  signUp: async (parent, { username, email, firstName, lastName, status, password }, { models }) => {
     // normalize email address
     email = email.trim().toLowerCase();
     // hash the password
@@ -113,6 +113,8 @@ module.exports = {
       const user = await models.User.create({
         username,
         email,
+        firstName,
+        lastName,
         avatar,
         status,
         password: hashed
