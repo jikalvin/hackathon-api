@@ -231,7 +231,7 @@ class _SignUpInfoState extends State<SignUpInfo> {
                                         )
                                       : CircleAvatar(
                                           backgroundImage: FileImage(
-                                            File(userImageFilePath!),
+                                            File(userImageFilePath),
                                           ),
                                         )),
                             ),

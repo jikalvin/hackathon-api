@@ -1,3 +1,4 @@
+import 'package:elearn/data/wi_widgets.dart';
 import 'package:flutter/material.dart';
 
 class CoursePage extends StatelessWidget {
@@ -60,20 +61,7 @@ class CoursePage extends StatelessWidget {
               .toList()
         ],
       )),
+      body: ModuleView(moduleID: courseID['modules'][0]['name'], moduleIndex: 0,)
     );
   }
 }
-
-// UserAccountsDrawerHeader(
-// decoration: BoxDecoration(
-// //   backgroundBlendMode: BlendMode.darken,
-// image: DecorationImage(
-// colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
-// image: AssetImage("assets/images/${courseID['image']}.jpg"),
-// )),
-// accountName: Text(courseID['name'], textScaleFactor: 1.3,),
-// accountEmail: Text("${courseID['instructors'].map((instructor) => instructor)}"),
-// currentAccountPicture: CircleAvatar(
-// backgroundImage: AssetImage("assets/images/${courseID['image']}.jpg"),
-// ),
-// ),

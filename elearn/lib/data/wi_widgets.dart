@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:elearn/data/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pdf_text/pdf_text.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
 
@@ -226,6 +230,7 @@ class _CourseListState extends State<CourseList> {
                 shrinkWrap: true,
                 itemCount: Courses.length,
                 itemBuilder: (context, index) {
+                  double progress = (Random().nextDouble() * 100);
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0),
                     child: Row(
@@ -236,102 +241,134 @@ class _CourseListState extends State<CourseList> {
                           child: Card(
                             elevation: 5.0,
                             child: Padding(
-                              padding: const EdgeInsets.all(12.0),
+                              padding: const EdgeInsets.all(5.0),
                               child: Column(
-                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  SizedBox(
-                                    child: Image.asset(
-                                      "assets/images/${all_images[index % 3]}.jpg",
-                                      fit: BoxFit.contain,
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    constraints: const BoxConstraints(
+                                      minHeight: 120,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          colorFilter: ColorFilter.mode(
+                                              Colors.black.withOpacity(.6),
+                                              BlendMode.multiply),
+                                          image: AssetImage(
+                                            "assets/images/${all_images[index % 3]}.jpg",
+                                          ),
+                                          fit: BoxFit.fill),
+                                    ),
+                                    child: Stack(
+                                      alignment: AlignmentDirectional.topEnd,
+                                      children: [
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              Courses[index]['name'],
+                                              textAlign: TextAlign.left,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 24.0,
+                                                letterSpacing: -0.5,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            Text(Courses[index]['info'],
+                                                maxLines: 2,
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.w300,
+                                                    fontSize: 14.0,
+                                                    color: Colors.white)),
+                                          ],
+                                        ),
+                                        Courses[index]['isLearning']
+                                            ? CircularProgressIndicator(
+                                                value: progress / 100,
+                                                backgroundColor: Colors.white,
+                                                strokeWidth: 8,
+                                                semanticsLabel: "%",
+                                                semanticsValue: "$progress",
+                                              )
+                                            : Container(),
+                                      ],
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    Courses[index]['name'],
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 24.0,
-                                      letterSpacing: -0.5,
-                                    ),
-                                  ),
-                                  const Divider(
-                                      thickness: 1.0,
-                                      height: 20,
-                                      color: Colors.black38),
-                                  Text(Courses[index]['info'],
-                                      maxLines: 2,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 16.0)),
-                                  const Divider(
-                                      thickness: 3.0,
-                                      height: 20,
-                                      color: Colors.black38),
-                                  Row(
+                                  const SizedBox(height: 10),
+                                  Column(
                                     children: [
-                                      Expanded(
-                                        child: Courses[index]['isLearning']
-                                            ? OutlinedButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              CoursePage(
-                                                                  courseID: Courses[
-                                                                      index])));
-                                                },
-                                                style: ButtonStyle(
-                                                    padding:
-                                                        MaterialStateProperty
-                                                            .all(
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Courses[index]['isLearning']
+                                                ? OutlinedButton(
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  CoursePage(
+                                                                      courseID:
+                                                                          Courses[
+                                                                              index])));
+                                                    },
+                                                    style: ButtonStyle(
+                                                        padding:
+                                                            MaterialStateProperty.all(
                                                                 const EdgeInsets
                                                                     .all(10))),
-                                                child: const Text(
-                                                  "Continue Learning",
-                                                  textScaleFactor: 1.3,
-                                                ),
-                                              )
-                                            : OutlinedButton(
-                                                onPressed: () {
-                                                  showCourseDialog(
-                                                      context, Courses[index]);
-                                                },
-                                                style: ButtonStyle(
-                                                    padding:
-                                                        MaterialStateProperty
-                                                            .all(
+                                                    child: const Text(
+                                                      "Continue Learning",
+                                                      textScaleFactor: 1.3,
+                                                    ),
+                                                  )
+                                                : OutlinedButton(
+                                                    onPressed: () {
+                                                      showCourseDialog(context,
+                                                          Courses[index]);
+                                                    },
+                                                    style: ButtonStyle(
+                                                        padding:
+                                                            MaterialStateProperty.all(
                                                                 const EdgeInsets
                                                                     .all(20))),
-                                                child: const Text(
-                                                  "Start Learning",
-                                                  textScaleFactor: 1.3,
-                                                ),
-                                              ),
+                                                    child: const Text(
+                                                      "Start Learning",
+                                                      textScaleFactor: 1.3,
+                                                    ),
+                                                  ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                              child: Text(
+                                                  "${Courses[index]['instructors'].map((instructor) => instructor)}",
+                                                  textAlign: TextAlign.right,
+                                                  maxLines: 2,
+                                                  style: const TextStyle(
+                                                      fontSize: 11,
+                                                      fontStyle:
+                                                          FontStyle.italic))),
+                                        ],
                                       ),
                                     ],
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Expanded(
-                                          child: Text(
-                                              "${Courses[index]['instructors'].map((instructor) => instructor)}",
-                                              textAlign: TextAlign.right,
-                                              maxLines: 2,
-                                              style: const TextStyle(
-                                                  fontSize: 11,
-                                                  fontStyle:
-                                                      FontStyle.italic))),
-                                    ],
-                                  ),
+                                  )
                                 ],
                               ),
                             ),
@@ -349,7 +386,9 @@ class _CourseListState extends State<CourseList> {
 }
 
 class ModuleView extends StatefulWidget {
-  const ModuleView({super.key, required this.moduleID});
+  const ModuleView(
+      {super.key, required this.moduleID, required this.moduleIndex});
+  final int moduleIndex;
   final String moduleID;
   @override
   State<ModuleView> createState() => _ModuleViewState();
@@ -357,130 +396,133 @@ class ModuleView extends StatefulWidget {
 
 class _ModuleViewState extends State<ModuleView> {
   late VideoPlayerController _videoController;
+  // late PdfDocument modulePDF;
+  PDFDoc? modulePDF;
+  String pdfText = '';
+  String pdfLink =
+      "https://github.com/MLesky/School-Work/blob/year2-semester1-work/CLIENT%20WEB%20DEVELOPMENT/Questions/activity4javascript.pdf";
+  String videoLink =
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
+
   @override
   void initState() {
     super.initState();
-    _videoController = VideoPlayerController.network(
-        'https://mega.nz/file/fdpWjbaa#VpLf97orByQ_GKyYk7NYPLL3FafRrnh6W_17MvDl9wc')
+    _videoController = VideoPlayerController.network(videoLink)
       ..initialize().then((_) {
         setState(() {});
       });
+
+    fetchPdf();
+    // modulePDF = PdfDocument(inputBytes: File.fromUri(Uri(path: pdfLink)).readAsBytesSync());
+    // pdfText = PdfTextExtractor(modulePDF).extractText();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(children: <Widget>[
-        Center(
-          child: _videoController.value.isInitialized
-              ? AspectRatio(
-                  aspectRatio: _videoController.value.aspectRatio,
-                  child: VideoPlayer(_videoController),
-                )
-              : const CircularProgressIndicator(),
-        ),
-        IconButton(
-          onPressed: () {
-            setState(() {
-              _videoController.value.isPlaying
-                  ? _videoController.pause()
-                  : _videoController.play();
-            });
-          },
-          icon: Icon(
-            _videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
-          ),
-        )
-      ]),
-    );
-  }
-}
-
-void pickImage(
-    {required BuildContext context,
-    required File? imageFile,
-    required imageFilePath}) {
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: const RoundedRectangleBorder(),
-          child: SizedBox(
-            height: 350,
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Column(
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(children: <Widget>[
+            Text(widget.moduleID,
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 15),
+            Center(
+              child: Stack(
+                alignment: AlignmentDirectional.center,
                 children: [
-                  const Text("Select From"),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              onPressed: () async {
-                                final imageFile = await ImagePicker()
-                                    .pickImage(source: ImageSource.camera);
-                                print("Selected Image: ${imageFile?.path}");
-                                if (imageFile != null) {
-                                  imageFilePath = imageFile?.path;
-                                  Navigator.pop(context);
-                                } else {
-                                  imageFilePath = '';
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar((const SnackBar(
-                                    content: Text("No image selected"),
-                                  )));
-                                }
-                              },
-                              icon: const Icon(Icons.camera_alt_rounded,
-                                  size: 80),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Text("Camera")
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            IconButton(
-                              onPressed: () async {
-                                final imageFile = await ImagePicker()
-                                    .pickImage(source: ImageSource.camera);
-                                print("Selected Image: ${imageFile?.path}");
-                                if (imageFile != null) {
-                                  imageFilePath = imageFile?.path;
-                                  Navigator.pop(context);
-                                } else {
-                                  imageFilePath = '';
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar((const SnackBar(
-                                    content: Text("No image selected"),
-                                  )));
-                                }
-                              },
-                              icon: const Icon(Icons.insert_photo_outlined,
-                                  size: 80),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Text("Gallery"),
-                          ],
+                  _videoController.value.isInitialized
+                      ? AspectRatio(
+                          aspectRatio: _videoController.value.aspectRatio,
+                          child: Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: <Widget>[
+                                VideoPlayer(_videoController),
+                                VideoProgressIndicator(_videoController,
+                                    allowScrubbing: true)
+                              ]),
                         )
-                      ],
-                    ),
-                  )
+                      : Container(
+                          width: 300,
+                          height: 175,
+                          color: Colors.black.withOpacity(.7),
+                        ),
+                  _videoController.value.isBuffering &&
+                          _videoController.value.isPlaying
+                      ? CircularProgressIndicator(
+                          backgroundColor: Colors.black.withOpacity(.7),
+                        )
+                      : Container(),
                 ],
               ),
             ),
-          ),
-        );
-      });
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _videoController.value.isPlaying
+                          ? _videoController.pause()
+                          : _videoController.play();
+                    });
+                  },
+                  icon: Icon(
+                    _videoController.value.isPlaying
+                        ? Icons.pause
+                        : Icons.play_arrow,
+                    color: Colors.blue,
+                    size: 30,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 20, thickness: 3, color: Colors.black38),
+            modulePDF == null ? const LinearProgressIndicator() : Text(pdfText),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                    onPressed: () {
+                      if (widget.moduleIndex > 0) {
+                        ModuleView(moduleID: "id", moduleIndex:  widget.moduleIndex+1);
+                      }
+                    },
+                    icon: Icon(Icons.arrow_back_ios_rounded),
+                    label: Text("Back")),
+                widget.moduleIndex < Courses.length ? ElevatedButton.icon(
+                    onPressed: () {
+                        ModuleView(moduleID: "id", moduleIndex:  widget.moduleIndex-1);
+                    },
+                    icon: Icon(Icons.arrow_forward_ios_rounded),
+                    label: Text("Back")) : ElevatedButton.icon(
+                    onPressed: () {
+                      ModuleView(moduleID: "id", moduleIndex:  widget.moduleIndex-1);
+                    },
+                    icon: Icon(Icons.done),
+                    label: Text("Finish"))
+              ],
+            )
+          ]),
+        ),
+      ],
+    );
+  }
+
+  Future fetchPdf() async {
+    final fetchResult = await PDFDoc.fromURL(pdfLink);
+    setState(() {
+      modulePDF = fetchResult;
+      pdfText = modulePDF!.text as String;
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _videoController.dispose();
+    // modulePDF.dispose();
+  }
 }
 
 PreferredSizeWidget TopToolBar(BuildContext context) {
